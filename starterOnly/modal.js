@@ -35,3 +35,26 @@ function launchModal() {
 function closeModal() {
   modalbg.style.display = "none";
 }
+
+// Fonction de validation du formulaire
+function validate() {
+  const formData = document.querySelectorAll(".formData");
+  const confMsg = document.getElementById("confirmationMsg");
+
+  // Sélectionnez les balises <input> à l'intérieur du premier élément avec la classe "formData"
+  const inputs = formData[0].querySelectorAll("input");
+
+  // Parcourez chaque élément <input> trouvé
+  for (let i = 0; i < inputs.length; i++) {
+    // Vérifiez si la valeur de l'élément <input> est vide
+    if (!inputs[i].value) {
+      // Affichez une alerte si l'un des champs est vide
+      alert("Veuillez renseigner tous les champs, merci !");
+      return false; // Arrêtez la validation et empêchez l'envoi du formulaire
+    }
+  }
+
+  // Si la boucle se termine sans interruption, cela signifie que tous les champs sont remplis
+  confMsg.innerHTML = "Merci ! Votre réservation a été reçue.";
+  return true; // Permettez l'envoi du formulaire
+}
