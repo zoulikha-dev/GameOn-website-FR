@@ -1,87 +1,171 @@
-// Définition de la fonction editNav
+// Fonction pour modifier la navigation
 function editNav() {
-  // Récupération de l'élément du DOM avec l'ID "myTopnav"
+  // Récupère l'élément du DOM avec l'ID "myTopnav"
   var x = document.getElementById("myTopnav");
 
-  // Vérification de la classe actuelle de l'élément
+  // Vérifie si la classe actuelle est "topnav"
   if (x.className === "topnav") {
-    // Si la classe actuelle est "topnav", ajoute la classe "responsive"
+    // Si oui, ajoute la classe "responsive" pour rendre la navigation responsive
     x.className += " responsive";
   } else {
-    // Si la classe actuelle n'est pas "topnav", réinitialise à "topnav"
+    // Sinon, réinitialise la classe à "topnav"
     x.className = "topnav";
   }
 }
 
-// DOM Elements
-const modalbg = document.querySelector(".bground");
-const modalBtn = document.querySelectorAll(".modal-btn");
-const formData = document.querySelectorAll(".formData");
-const iconCloseModal = document.querySelectorAll(".close");
-const submitBtn = document.querySelectorAll(".btn-submit");
+// Sélectionne les éléments du DOM et stock dans des variables
+const modalbg = document.querySelector(".bground"); // La modale (fenêtre contextuelle)
+const modalBtn = document.querySelectorAll(".modal-btn"); // Les boutons pour ouvrir la modale
+const formData = document.querySelectorAll(".formData"); // Les champs de formulaire
+const iconCloseModal = document.querySelectorAll(".close"); // Les boutons pour fermer la modale
+const submitBtn = document.querySelectorAll(".btn-submit"); // Les boutons de soumission du formulaire
 
-// launch modal event
+// Événement pour lancer la modale lorsque l'on clique sur un des boutons
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 
-//close modal event
+// Événement pour fermer la modale lorsque l'on clique sur un des boutons de fermeture
 iconCloseModal.forEach((btn) => btn.addEventListener("click", closeModal));
 
-// launch modal form
+// Fonction pour ouvrir la modale
 function launchModal() {
-  console.log("Modal launched");
-  modalbg.style.display = "block";
+  console.log("Modal launched"); // Affiche un message dans la console
+  modalbg.style.display = "block"; // Affiche la modale
 }
 
-//close modal
+// Fonction pour fermer la modale
 function closeModal(event) {
-  console.log("Close modal function called");
-  // Empêcher la propagation de l'événement si nécessaire
-  event.stopPropagation();
-  modalbg.style.display = "none";
+  console.log("Close modal function called"); // Affiche un message dans la console
+  event.stopPropagation(); // Empêche la propagation de l'événement (optionnel)
+  modalbg.style.display = "none"; // Cache la modale
 }
 
-// Fonction de suppression des messages d'erreur
+// Fonction pour supprimer tous les messages d'erreur
 function removeErrorMessages() {
+  // Sélectionne tous les messages d'erreur
   const errorMessages = document.querySelectorAll(".error-message");
+  // Supprime chaque message d'erreur
   errorMessages.forEach((errorMessage) => errorMessage.remove());
 }
 
 // Fonction pour valider une adresse e-mail
 function isValidEmail(email) {
-  // Utilisez une expression régulière pour vérifier le format de l'e-mail
+  // Utilise une expression régulière pour vérifier si l'e-mail est au bon format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  return emailRegex.test(email); // Retourne vrai si l'e-mail est valide, sinon faux
 }
 
-// Stocker les valeurs actuelles des champs du formulaire
+// Stocke les valeurs des champs de formulaire pour les restaurer en cas d'erreur
 let formDataValues = {};
 
-function validate(event) {
-  event.preventDefault();
-  console.log("Validation function called");
-  const confMsg = document.getElementById("confirmationMsg");
-  const inputs = document.querySelectorAll(".formData input");
-  let isValid = true;
+function createConfirmationModal() {
+  // Créer l'élément de la modal
+  const modal = document.createElement("div");
+  modal.classList.add("confirmation-modal");
+  modal.id = "confirmationModal";
 
-  // Supprimez les messages d'erreur existants
+  // Créer le contenu de la modal
+  const content = document.createElement("div");
+  content.classList.add("confirmation-content");
+
+  // Ajouter le message de confirmation
+  const message = document.createElement("h2");
+  message.textContent = "Merci pour votre inscription";
+
+  // Ajouter le bouton de fermeture avec une croix
+  const closeCross = document.createElement("button");
+  closeCross.innerHTML = "&times;"; // Code HTML pour la croix
+  closeCross.classList.add("btn-close", "btn-cross");
+  closeCross.setAttribute("type", "button");
+
+  // Ajouter le bouton "Fermer"
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "Fermer";
+  closeBtn.classList.add("btn-close", "btn-text");
+  closeBtn.setAttribute("type", "button");
+  closeBtn.setAttribute("id", "closeConfirmationModal");
+
+  // Ajouter le contenu, la croix, et le bouton de fermeture à la modal
+  content.appendChild(closeCross); // Ajouter la croix en premier
+  content.appendChild(message);
+  content.appendChild(closeBtn); // Ajouter le bouton "Fermer"
+  modal.appendChild(content);
+
+  // Ajouter la modal au body
+  document.body.appendChild(modal);
+
+  // Ajouter les événements pour fermer la modal
+  closeCross.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  // Fermer la modal en cliquant en dehors du contenu
+  window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+
+  // Afficher la modal
+  modal.style.display = "block";
+}
+
+// Fonction pour valider le formulaire
+function validate(event) {
+  event.preventDefault(); // Empêche le formulaire d'être envoyé normalement
+  console.log("Validation function called"); // Affiche un message dans la console
+  const inputs = document.querySelectorAll(".formData input"); // Sélectionne tous les champs de formulaire
+  let isValid = true; // Variable pour vérifier si le formulaire est valide
+
+  // Supprime les messages d'erreur existants
   removeErrorMessages();
 
-  // Fonction pour afficher un message d'erreur sous un champ spécifique
+  // Fonction pour afficher un message d'erreur sous un champ
   function displayErrorMessage(input, errorMessage) {
-    const errorContainer = document.createElement("div");
-    errorContainer.classList.add("error-message");
-    errorContainer.textContent = errorMessage;
-    input.parentNode.appendChild(errorContainer);
-    isValid = false;
+    const errorContainer = document.createElement("div"); // Crée un nouvel élément pour le message d'erreur
+    errorContainer.classList.add("error-message"); // Ajoute une classe CSS pour le style
+    errorContainer.textContent = errorMessage; // Définit le texte du message d'erreur
+
+    // Ajoute un attribut data-error-visible à l'élément parent pour activer le style rouge
+    const parent = input.closest(".formData");
+    parent.setAttribute("data-error-visible", "true"); // Affiche la bordure rouge sur le champ
+
+    input.parentNode.appendChild(errorContainer); // Ajoute le message d'erreur sous le champ
+    isValid = false; // Marque le formulaire comme invalide
   }
 
-  // Vérifiez chaque champ
+  // Fonction pour retirer les erreurs et les bordures rouges
+  function removeInputError(event) {
+    const input = event.target;
+    const parent = input.closest(".formData");
+    if (parent) {
+      parent.removeAttribute("data-error-visible"); // Retire l'attribut data-error-visible
+      const errorMessage = parent.querySelector(".error-message");
+      if (errorMessage) {
+        errorMessage.remove(); // Supprime le message d'erreur
+      }
+    }
+  }
+
+  // Ajoute des écouteurs d'événements sur les champs de formulaire pour retirer les erreurs au changement
+  formData.forEach((field) => {
+    const input = field.querySelector("input");
+    if (input) {
+      input.addEventListener("input", removeInputError);
+    }
+  });
+
+  // Vérifie chaque champ de formulaire
   inputs.forEach((input) => {
-    // Sauvegarder les valeurs actuelles des champs
+    // Sauvegarde la valeur actuelle du champ
     formDataValues[input.id] = input.value;
     switch (input.id) {
       case "first":
       case "last":
+        // Vérifie que les champs prénom et nom ont au moins 2 caractères
         if (input.value.trim().length < 2) {
           displayErrorMessage(
             input,
@@ -90,6 +174,7 @@ function validate(event) {
         }
         break;
       case "email":
+        // Vérifie que l'adresse e-mail est valide
         if (!isValidEmail(input.value)) {
           displayErrorMessage(
             input,
@@ -98,6 +183,7 @@ function validate(event) {
         }
         break;
       case "birthdate":
+        // Vérifie que la date de naissance est remplie
         if (input.value.trim() === "") {
           displayErrorMessage(
             input,
@@ -106,7 +192,18 @@ function validate(event) {
         }
         break;
       case "quantity":
-        if (isNaN(input.value) || input.value < 0 || input.value > 99) {
+        // Vérifie que la quantité est un nombre entre 0 et 99 et n'est pas vide
+        const quantityValue = input.value.trim();
+        if (quantityValue === "") {
+          displayErrorMessage(
+            input,
+            "Veuillez entrer une valeur pour le nombre de tournois."
+          );
+        } else if (
+          isNaN(quantityValue) ||
+          quantityValue < 0 ||
+          quantityValue > 99
+        ) {
           displayErrorMessage(
             input,
             "Veuillez entrer une valeur numérique entre 0 et 99 pour le nombre de tournois."
@@ -124,43 +221,32 @@ function validate(event) {
           'input[name="location"]:checked'
         );
         if (locations.length === 0) {
-          // Afficher le message d'erreur une seule fois pour tous les emplacements non sélectionnés
+          // Affiche un message d'erreur si aucun emplacement n'est sélectionné
           const errorMessage = "Veuillez sélectionner un emplacement.";
           if (!document.querySelector(".error-message")) {
             displayErrorMessage(input, errorMessage);
           }
         }
-        //   break;
-        // case "checkbox1":
-        // case "checkbox2":
-        //   // La case des conditions générales doit être cochée
-        //   if (!input.checked) {
-        //     console.log("Conditions générales non cochées");
-        //     displayErrorMessage(
-        //       input,
-        //       "Vous devez accepter les conditions générales d'utilisation."
-        //     );
-        //   }
         break;
     }
   });
 
-  // Si la boucle se termine sans interruption, cela signifie que tous les champs sont valides
+  // Si tous les champs sont valides
   if (isValid) {
-    // Afficher le message de confirmation dans l'élément confirmationMsg
-    alert("Merci ! Votre réservation a été reçue.");
-    closeModal(event);
+    // Crée et affiche la modal de confirmation
+    createConfirmationModal();
+    closeModal(event); // Ferme la modale de réservation
 
-    // Réinitialiser les valeurs du formulaire
+    // Réinitialise les valeurs du formulaire
     document.forms["reserve"].reset();
-    // Réinitialiser la variable formDataValues
+    // Réinitialise les valeurs stockées des champs de formulaire
     formDataValues = {};
   } else {
-    // Si la validation échoue, restaurer les valeurs des champs du formulaire
+    // Si des erreurs sont présentes, restaure les valeurs des champs du formulaire
     Object.keys(formDataValues).forEach((inputId) => {
       document.getElementById(inputId).value = formDataValues[inputId];
     });
   }
 
-  return isValid; // Permet l'envoi du formulaire uniquement si tous les champs sont valides
+  return isValid; // Retourne vrai si le formulaire est valide, sinon faux
 }
